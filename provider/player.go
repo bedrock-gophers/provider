@@ -17,46 +17,46 @@ type playerData struct {
 	Username string
 	// Position is the last position the player was located at.
 	// Velocity is the speed at which the player was moving.
-	Position, Velocity mgl64.Vec3
+	Position, Velocity mgl64.Vec3 `json:",omitempty"`
 	// Yaw and Pitch represent the rotation of the player.
-	Yaw, Pitch float64
+	Yaw, Pitch float64 `json:",omitempty"`
 	// Health, MaxHealth ...
-	Health, MaxHealth float64
+	Health, MaxHealth float64 `json:",omitempty"`
 	// Hunger is the amount of hunger points the player currently has, shown on the hunger bar.
 	// This should be between 0-20.
-	Hunger int
+	Hunger int `json:",omitempty"`
 	// FoodTick this variable is used when the hunger exceeds 17 or is equal to 0. It is used to heal
 	// the player using saturation or make the player starve and receive damage if the hunger is at 0.
 	// This value should be between 0-80.
-	FoodTick int
+	FoodTick int `json:",omitempty"`
 	// ExhaustionLevel determines how fast the hunger level depletes and is controlled by the kinds
 	// of food the player has eaten. SaturationLevel determines how fast the saturation level depletes.
-	ExhaustionLevel, SaturationLevel float64
+	ExhaustionLevel, SaturationLevel float64 `json:",omitempty"`
 	// AbsorptionLevel represents the amount of extra health the player has. This health does not regenerate
 	// and is lost when the player takes damage.
-	AbsorptionLevel float64
+	AbsorptionLevel float64 `json:",omitempty"`
 	// EnchantmentSeed is the seed used to generate the enchantments from enchantment tables.
-	EnchantmentSeed int64
+	EnchantmentSeed int64 `json:",omitempty"`
 	// Experience is the current experience the player has.
-	Experience int
+	Experience int `json:",omitempty"`
 	// AirSupply is the current tick of the player's air supply.
-	AirSupply int64
+	AirSupply int64 `json:",omitempty"`
 	// MaxAirSupply is the maximum air supply the player can have.
-	MaxAirSupply int64
+	MaxAirSupply int64 `json:",omitempty"`
 	// GameMode is the last gamemode the playerData had, like creative or survival.
-	GameMode int
+	GameMode int `json:",omitempty"`
 	// Inventory contains all the items in the inventory, including armor, main inventory and offhand.
-	Inventory InventoryData
+	Inventory InventoryData `json:",omitempty"`
 	// EnderChestInventory contains the items in the player's ender chest.
-	EnderChestInventory []StackData
+	EnderChestInventory []StackData `json:",omitempty"`
 	// Effects contains all the currently active potions effects the player has.
-	Effects []EffectData
+	Effects []EffectData `json:",omitempty"`
 	// FireTicks is the amount of ticks the player will be on fire for.
-	FireTicks int64
+	FireTicks int64 `json:",omitempty"`
 	// FallDistance is the distance the player has currently been falling. This is used to calculate fall damage.
-	FallDistance float64
+	FallDistance float64 `json:",omitempty"`
 	// Dimension is the dimension the player is in.
-	Dimension int
+	Dimension int `json:",omitempty"`
 }
 
 // convertSavablePlayerData converts the player data passed to a playerData struct that can be saved to disk.

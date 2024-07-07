@@ -64,6 +64,11 @@ func (p *Provider) startCacheTicker() {
 	}
 }
 
+// SavePlayer saves the player data passed to the player provider.
+func (p *Provider) SavePlayer(pl *player.Player) error {
+	return p.Save(pl.UUID(), pl.Data())
+}
+
 // Save saves the player data passed to the player provider.
 func (p *Provider) Save(uuid uuid.UUID, data player.Data) error {
 	p.dataMu.Lock()

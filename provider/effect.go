@@ -7,11 +7,11 @@ import (
 
 // EffectData is a struct that contains the data of an effect that can be used to create an effect.
 type EffectData struct {
-	ID            int
-	Amplifier     int
-	Duration      time.Duration
-	Ambient       bool
-	ShowParticles bool
+	ID            int           `json:",omitempty"`
+	Amplifier     int           `json:",omitempty"`
+	Duration      time.Duration `json:",omitempty"`
+	Ambient       bool          `json:",omitempty"`
+	ShowParticles bool          `json:",omitempty"`
 }
 
 // ToEffect converts the EffectData to an effect.Effect.

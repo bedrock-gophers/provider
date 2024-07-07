@@ -65,27 +65,27 @@ func StackToData(stack item.Stack) StackData {
 
 // InventoryData represents the data of an inventory.
 type InventoryData struct {
-	Items        []StackData
-	Boots        StackData
-	Leggings     StackData
-	Chestplate   StackData
-	Helmet       StackData
-	OffHand      StackData
-	MainHandSlot uint32
+	Items        []StackData `json:",omitempty"`
+	Boots        StackData   `json:",omitempty"`
+	Leggings     StackData   `json:",omitempty"`
+	Chestplate   StackData   `json:",omitempty"`
+	Helmet       StackData   `json:",omitempty"`
+	OffHand      StackData   `json:",omitempty"`
+	MainHandSlot uint32      `json:",omitempty"`
 }
 
 // StackData represents the data of an item stack.
 type StackData struct {
-	Name  string
-	Meta  int16
-	Count int
+	Name  string `json:",omitempty"`
+	Meta  int16  `json:",omitempty"`
+	Count int    `json:",omitempty"`
 
-	CustomName   string
-	Lore         []string
-	Damage       int
-	AnvilCost    int
-	Data         map[string]any
-	Enchantments []EnchantmentData
+	CustomName   string            `json:",omitempty"`
+	Lore         []string          `json:",omitempty"`
+	Damage       int               `json:",omitempty"`
+	AnvilCost    int               `json:",omitempty"`
+	Data         map[string]any    `json:",omitempty"`
+	Enchantments []EnchantmentData `json:",omitempty"`
 }
 
 // ToStack converts the StackData to an item.Stack.
@@ -119,8 +119,8 @@ func (i StackData) ToStack() (item.Stack, error) {
 
 // EnchantmentData represents the data of an enchantment.
 type EnchantmentData struct {
-	Name  string
-	Level int
+	Name  string `json:",omitempty"`
+	Level int    `json:",omitempty"`
 }
 
 // ToEnchantment converts the EnchantmentData to an item.EnchantmentType.
