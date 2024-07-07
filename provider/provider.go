@@ -52,7 +52,7 @@ func (p *Provider) startCacheTicker() {
 			}
 
 			p.dataMu.Lock()
-			if p.settings.AutoSave {
+			if !p.settings.AutoSave {
 				for id, data := range p.data {
 					_ = p.savePlayerData(id, data)
 				}
