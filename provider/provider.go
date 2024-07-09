@@ -109,11 +109,23 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 	filePath := fmt.Sprintf("%s/%s.json", p.settings.Path, uuid.String())
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("[+] User with UUID %s is joining for the first time.\n", uuid)
+			return player.Data{}, nil
+		}
 		fmt.Println("error reading file: ", err)
 		return player.Data{}, err
 	}
 	err = json.Unmarshal(buf, &playerDat)
-	return p.convertSavablePlayerData(playerDat, wrld), err
+	if err != nil {
+		fmt.Println("error unmarshalling: ", err)
+		return player.Data{}, err
+	}
+	dat := p.convertSavablePlayerData(playerDat, wrld)
+	p.dataMu.Lock()
+	p.data[uuid] = dat
+	p.dataMu.Unlock()
+	return dat, nil
 }
 
 // Close closes the player provider and flushes the player data to disk.
