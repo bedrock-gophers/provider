@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"fmt"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
@@ -111,7 +112,7 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 	if err != nil {
 		if os.IsNotExist(err) {
 			fmt.Printf("[+] User with UUID %s is joining for the first time.\n", uuid)
-			return player.Data{}, nil
+			return player.Data{}, errors.New("player data not found")
 		}
 		fmt.Println("error reading file: ", err)
 		return player.Data{}, err
