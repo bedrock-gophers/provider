@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"fmt"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
@@ -83,14 +82,14 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 
 	gm, ok := world.GameModeByID(dat.GameMode)
 	if !ok {
-		fmt.Printf("unknown gamemode: %d\n", dat.GameMode)
+		p.log.Errorf("unknown gamemode: %d\n", dat.GameMode)
 		gm = world.GameModeSurvival
 	}
 	data.GameMode = gm
 
 	inv, err := ConvertSavableInventory(dat.Inventory)
 	if err != nil {
-		fmt.Printf("error decoding inventory: %v\n", err)
+		p.log.Errorf("error decoding inventory: %v\n", err)
 	}
 	data.Inventory = inv
 	data.EnderChestInventory = make([]item.Stack, len(dat.EnderChestInventory))
