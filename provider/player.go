@@ -80,12 +80,14 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 	data.Experience = dat.Experience
 	data.AirSupply = dat.AirSupply
 	data.MaxAirSupply = dat.MaxAirSupply
+
 	gm, ok := world.GameModeByID(dat.GameMode)
 	if !ok {
 		fmt.Printf("unknown gamemode: %d\n", dat.GameMode)
 		gm = world.GameModeSurvival
 	}
 	data.GameMode = gm
+
 	inv, err := ConvertSavableInventory(dat.Inventory)
 	if err != nil {
 		fmt.Printf("error decoding inventory: %v\n", err)
@@ -97,9 +99,16 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 	}
 	data.FallDistance = dat.FallDistance
 	data.FireTicks = dat.FireTicks
+
 	dim, ok := world.DimensionByID(dat.Dimension)
 	if ok {
 		data.World = wrld(dim)
+		if data.World == nil {
+			newWorld := p.settings.World(dim)
+			if newWorld != nil {
+				data.World = newWorld
+			}
+		}
 	}
 
 	return data

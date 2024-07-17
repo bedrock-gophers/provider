@@ -2,7 +2,7 @@ package provider
 
 import (
 	"errors"
-	"fmt"
+	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-jose/go-jose/v3/json"
@@ -15,6 +15,8 @@ import (
 
 // Provider is a struct that is used to store player data in memory and save it to disk.
 type Provider struct {
+	log server.Logger
+
 	path   string
 	dataMu sync.Mutex
 	data   map[uuid.UUID]player.Data
@@ -24,12 +26,14 @@ type Provider struct {
 }
 
 // NewProvider returns a new player provider with the settings passed.
-func NewProvider(settings Settings) *Provider {
+func NewProvider(conf *server.Config, settings Settings) *Provider {
 	prov := &Provider{
+		log:      conf.Log,
 		path:     strings.TrimSuffix(settings.Path, "/"),
 		data:     make(map[uuid.UUID]player.Data),
 		settings: settings,
 	}
+	conf.PlayerProvider = prov
 
 	go prov.startCacheTicker()
 	return prov
@@ -82,9 +86,13 @@ func (p *Provider) Save(uuid uuid.UUID, data player.Data) error {
 	return p.savePlayerData(uuid, data)
 }
 
+// filePath returns the file path for the UUID passed.
+func (p *Provider) filePath(uuid uuid.UUID) string {
+	return p.settings.Path + "/" + uuid.String() + ".json"
+}
+
 // savePlayerData saves the player data passed to the player provider to disk.
 func (p *Provider) savePlayerData(uuid uuid.UUID, data player.Data) error {
-	filePath := fmt.Sprintf("%s/%s.json", p.settings.Path, uuid.String())
 	playerDat := p.convertNonSavablePlayerData(data)
 
 	buf, err := json.MarshalIndent(playerDat, "", "\t")
@@ -93,7 +101,7 @@ func (p *Provider) savePlayerData(uuid uuid.UUID, data player.Data) error {
 	}
 
 	_ = os.MkdirAll(p.settings.Path, os.ModePerm)
-	return os.WriteFile(filePath, buf, 0644)
+	return os.WriteFile(p.filePath(uuid), buf, 0644)
 }
 
 // Load loads the player data for the UUID passed from the player provider.
@@ -107,19 +115,21 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 	var playerDat playerData
 
 	_ = os.MkdirAll(p.settings.Path, os.ModePerm)
-	filePath := fmt.Sprintf("%s/%s.json", p.settings.Path, uuid.String())
-	buf, err := os.ReadFile(filePath)
+	buf, err := os.ReadFile(p.filePath(uuid))
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Printf("[+] User with UUID %s is joining for the first time.\n", uuid)
+			msg := p.settings.FirstJoinMessage
+			if len(msg) > 0 {
+				p.log.Infof(p.settings.FirstJoinMessage, uuid)
+			}
 			return player.Data{}, errors.New("player data not found")
 		}
-		fmt.Println("error reading file: ", err)
+		p.log.Errorf("error reading file: %s", err)
 		return player.Data{}, err
 	}
 	err = json.Unmarshal(buf, &playerDat)
 	if err != nil {
-		fmt.Println("error unmarshalling: ", err)
+		p.log.Errorf("error unmarshalling: %s", err)
 		return player.Data{}, err
 	}
 	dat := p.convertSavablePlayerData(playerDat, wrld)
