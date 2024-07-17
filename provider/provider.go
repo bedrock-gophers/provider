@@ -122,14 +122,14 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 			if len(msg) > 0 {
 				p.log.Infof(p.settings.FirstJoinMessage, uuid)
 			}
-			return player.Data{}, errors.New("player data not found")
+			return player.Data{}, errors.New("bedrock-gophers/provider: player data not found")
 		}
-		p.log.Errorf("error reading file: %s", err)
+		p.log.Errorf("bedrock-gophers/provider: error reading file: %s", err)
 		return player.Data{}, err
 	}
 	err = json.Unmarshal(buf, &playerDat)
 	if err != nil {
-		p.log.Errorf("error unmarshalling: %s", err)
+		p.log.Errorf("bedrock-gophers/provider: error unmarshalling: %s", err)
 		return player.Data{}, err
 	}
 	dat := p.convertSavablePlayerData(playerDat, wrld)

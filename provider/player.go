@@ -82,14 +82,14 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 
 	gm, ok := world.GameModeByID(dat.GameMode)
 	if !ok {
-		p.log.Errorf("unknown gamemode: %d\n", dat.GameMode)
+		p.log.Errorf("bedrock-gophers/provider: unknown gamemode: %d\n", dat.GameMode)
 		gm = world.GameModeSurvival
 	}
 	data.GameMode = gm
 
 	inv, err := ConvertSavableInventory(dat.Inventory)
 	if err != nil {
-		p.log.Errorf("error decoding inventory: %v\n", err)
+		p.log.Errorf("bedrock-gophers/provider: error decoding inventory: %v\n", err)
 	}
 	data.Inventory = inv
 	data.EnderChestInventory = make([]item.Stack, len(dat.EnderChestInventory))
