@@ -102,7 +102,7 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 
 	dim, ok := world.DimensionByID(dat.Dimension)
 	if ok {
-		if !p.settings.UseServerWorld {
+		if p.settings.UseServerWorld {
 			data.World = wrld(dim)
 		} else {
 			newWorld := p.settings.World(dim)
