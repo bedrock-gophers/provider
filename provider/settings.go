@@ -13,6 +13,8 @@ type Settings struct {
 	Path string
 	// FlushRate is the rate at which the player data is flushed to from memory.
 	FlushRate time.Duration
+	// UseServerWorld is true if the server should use the world of the server.
+	UseServerWorld bool
 	// World is a function that returns the world of the specified dimension.
 	World func(world.Dimension) *world.World
 	// AutoSave is true if the player data should be saved automatically.
@@ -44,6 +46,7 @@ func DefaultSettings() Settings {
 		FirstJoinMessage: "[+] User with UUID %s is joining for the first time.",
 		Path:             "assets/players/",
 		FlushRate:        time.Minute,
+		UseServerWorld:   true,
 		World:            func(dimension world.Dimension) *world.World { return nil },
 		AutoSave:         true,
 		SavePosition:     true,
