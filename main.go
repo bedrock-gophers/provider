@@ -23,7 +23,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	conf.PlayerProvider = provider.NewProvider(provider.DefaultSettings())
+	provider.NewProvider(&conf, provider.DefaultSettings())
 	srv := conf.New()
 	srv.CloseOnProgramEnd()
 
