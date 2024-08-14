@@ -2,21 +2,21 @@
 	"UUID": "ad8f4757-7072-39fb-bac1-26032ddc6289",
 	"Username": "RestartFU",
 	"Position": [
-		18.022459030151367,
+		-15.741445541381836,
 		-59.9999885559082,
-		26.252099990844727
+		24.253496170043945
 	],
 	"Velocity": [
 		0,
 		0,
 		0
 	],
-	"Yaw": 7.485198974609375,
-	"Pitch": 24.282608032226562,
+	"Yaw": -150.65420532226562,
+	"Pitch": 3.658599853515625,
 	"Health": 20,
 	"MaxHealth": 20,
 	"Hunger": 20,
-	"FoodTick": 48,
+	"FoodTick": 19,
 	"SaturationLevel": 5,
 	"EnchantmentSeed": 2534270320275807541,
 	"AirSupply": 300,
@@ -25,34 +25,17 @@
 	"Inventory": {
 		"Items": [
 			{
-				"Name": "minecraft:grass_block",
+				"Name": "minecraft:apple",
 				"Count": 1,
-				"Damage": -1
+				"Damage": -1,
+				"Data": {
+					"test": 8
+				}
 			},
-			{
-				"Name": "minecraft:cobblestone_wall",
-				"Meta": 13,
-				"Count": 64,
-				"Damage": -1
-			},
-			{
-				"Name": "minecraft:cobblestone_wall",
-				"Meta": 13,
-				"Count": 64,
-				"Damage": -1
-			},
-			{
-				"Name": "minecraft:cobblestone_wall",
-				"Meta": 4,
-				"Count": 64,
-				"Damage": -1
-			},
-			{
-				"Name": "minecraft:cobblestone_wall",
-				"Meta": 5,
-				"Count": 64,
-				"Damage": -1
-			},
+			{},
+			{},
+			{},
+			{},
 			{},
 			{},
 			{},

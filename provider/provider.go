@@ -1,16 +1,18 @@
 package provider
 
 import (
+	"bytes"
 	"errors"
+	"os"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-jose/go-jose/v3/json"
 	"github.com/google/uuid"
-	"os"
-	"strings"
-	"sync"
-	"time"
 )
 
 // Provider is a struct that is used to store player data in memory and save it to disk.
@@ -127,7 +129,11 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 		p.log.Errorf("bedrock-gophers/provider: error reading file: %s", err)
 		return player.Data{}, err
 	}
-	err = json.Unmarshal(buf, &playerDat)
+
+	dec := json.NewDecoder(bytes.NewReader(buf))
+	dec.SetNumberType(json.UnmarshalIntOrFloat)
+	err = dec.Decode(&playerDat)
+
 	if err != nil {
 		p.log.Errorf("bedrock-gophers/provider: error unmarshalling: %s", err)
 		return player.Data{}, err
