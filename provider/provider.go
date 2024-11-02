@@ -3,6 +3,7 @@ package provider
 import (
 	"bytes"
 	"errors"
+	"log/slog"
 	"os"
 	"strings"
 	"sync"
@@ -17,7 +18,7 @@ import (
 
 // Provider is a struct that is used to store player data in memory and save it to disk.
 type Provider struct {
-	log server.Logger
+	log *slog.Logger
 
 	path   string
 	dataMu sync.Mutex
@@ -122,11 +123,11 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 		if os.IsNotExist(err) {
 			msg := p.settings.FirstJoinMessage
 			if len(msg) > 0 {
-				p.log.Infof(p.settings.FirstJoinMessage, uuid)
+				p.log.Info(p.settings.FirstJoinMessage, uuid)
 			}
 			return player.Data{}, errors.New("bedrock-gophers/provider: player data not found")
 		}
-		p.log.Errorf("bedrock-gophers/provider: error reading file: %s", err)
+		p.log.Error("bedrock-gophers/provider: error reading file: %s", err)
 		return player.Data{}, err
 	}
 
@@ -135,7 +136,7 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 	err = dec.Decode(&playerDat)
 
 	if err != nil {
-		p.log.Errorf("bedrock-gophers/provider: error unmarshalling: %s", err)
+		p.log.Error("bedrock-gophers/provider: error unmarshalling: %s", err)
 		return player.Data{}, err
 	}
 	dat := p.convertSavablePlayerData(playerDat, wrld)
