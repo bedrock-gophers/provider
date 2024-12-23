@@ -2,13 +2,13 @@ package provider
 
 import (
 	"github.com/df-mc/dragonfly/server/item"
-	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player/playerdb"
 	"github.com/df-mc/dragonfly/server/world"
 )
 
 // ConvertSavableInventory converts an InventoryData to a player.InventoryData.
-func ConvertSavableInventory(data InventoryData) (player.InventoryData, error) {
-	var inv player.InventoryData
+func ConvertSavableInventory(data InventoryData) (playerdb.InventoryData, error) {
+	var inv playerdb.InventoryData
 
 	inv.Items = make([]item.Stack, len(data.Items))
 	for i, d := range data.Items {
@@ -28,7 +28,7 @@ func ConvertSavableInventory(data InventoryData) (player.InventoryData, error) {
 }
 
 // ConvertNonSavableInventory converts a player.InventoryData to an InventoryData.
-func ConvertNonSavableInventory(inv player.InventoryData) InventoryData {
+func ConvertNonSavableInventory(inv playerdb.InventoryData) InventoryData {
 	data := InventoryData{
 		Items:        make([]StackData, len(inv.Items)),
 		Boots:        StackToData(inv.Boots),

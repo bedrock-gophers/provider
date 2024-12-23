@@ -22,7 +22,7 @@ type Provider struct {
 
 	path   string
 	dataMu sync.Mutex
-	data   map[uuid.UUID]player.Data
+	data   map[uuid.UUID]config
 
 	settings Settings
 	closed   bool
@@ -33,7 +33,7 @@ func NewProvider(conf *server.Config, settings Settings) *Provider {
 	prov := &Provider{
 		log:      conf.Log,
 		path:     strings.TrimSuffix(settings.Path, "/"),
-		data:     make(map[uuid.UUID]player.Data),
+		data:     make(map[uuid.UUID]config),
 		settings: settings,
 	}
 	conf.PlayerProvider = prov
@@ -66,7 +66,7 @@ func (p *Provider) startCacheTicker() {
 				}
 			}
 
-			p.data = make(map[uuid.UUID]player.Data)
+			p.data = make(map[uuid.UUID]config)
 			p.dataMu.Unlock()
 		}
 	}
@@ -74,11 +74,13 @@ func (p *Provider) startCacheTicker() {
 
 // SavePlayer saves the player data passed to the player provider.
 func (p *Provider) SavePlayer(pl *player.Player) error {
-	return p.Save(pl.UUID(), pl.Data())
+	return p.Save(pl.UUID(), pl.Data(), pl.Tx().World())
 }
 
 // Save saves the player data passed to the player provider.
-func (p *Provider) Save(uuid uuid.UUID, data player.Data) error {
+func (p *Provider) Save(uuid uuid.UUID, cfg player.Config, w *world.World) error {
+	data := config{Config: cfg, World: w}
+
 	p.dataMu.Lock()
 	p.data[uuid] = data
 	p.dataMu.Unlock()
@@ -95,7 +97,7 @@ func (p *Provider) filePath(uuid uuid.UUID) string {
 }
 
 // savePlayerData saves the player data passed to the player provider to disk.
-func (p *Provider) savePlayerData(uuid uuid.UUID, data player.Data) error {
+func (p *Provider) savePlayerData(uuid uuid.UUID, data config) error {
 	playerDat := p.convertNonSavablePlayerData(data)
 
 	buf, err := json.MarshalIndent(playerDat, "", "\t")
@@ -108,12 +110,12 @@ func (p *Provider) savePlayerData(uuid uuid.UUID, data player.Data) error {
 }
 
 // Load loads the player data for the UUID passed from the player provider.
-func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World) (player.Data, error) {
+func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World) (player.Config, *world.World, error) {
 	p.dataMu.Lock()
 	data, ok := p.data[uuid]
 	p.dataMu.Unlock()
 	if ok {
-		return data, nil
+		return data.Config, data.World, nil
 	}
 	var playerDat playerData
 
@@ -125,10 +127,10 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 			if len(msg) > 0 {
 				p.log.Info(p.settings.FirstJoinMessage, uuid)
 			}
-			return player.Data{}, errors.New("bedrock-gophers/provider: player data not found")
+			return player.Config{}, nil, errors.New("bedrock-gophers/provider: player data not found")
 		}
 		p.log.Error("bedrock-gophers/provider: error reading file: %s", err)
-		return player.Data{}, err
+		return player.Config{}, nil, err
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(buf))
@@ -137,13 +139,13 @@ func (p *Provider) Load(uuid uuid.UUID, wrld func(world.Dimension) *world.World)
 
 	if err != nil {
 		p.log.Error("bedrock-gophers/provider: error unmarshalling: %s", err)
-		return player.Data{}, err
+		return player.Config{}, nil, err
 	}
 	dat := p.convertSavablePlayerData(playerDat, wrld)
 	p.dataMu.Lock()
 	p.data[uuid] = dat
 	p.dataMu.Unlock()
-	return dat, nil
+	return dat.Config, dat.World, nil
 }
 
 // Close closes the player provider and flushes the player data to disk.

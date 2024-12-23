@@ -1,12 +1,19 @@
 package provider
 
 import (
-	"github.com/df-mc/dragonfly/server/item"
+	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player/playerdb"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/google/uuid"
 )
+
+type config struct {
+	player.Config
+	World *world.World
+}
 
 // playerData is a struct that is used to store the data of a player in a format that can be saved to a file.
 type playerData struct {
@@ -39,9 +46,9 @@ type playerData struct {
 	// Experience is the current experience the player has.
 	Experience int `json:",omitempty"`
 	// AirSupply is the current tick of the player's air supply.
-	AirSupply int64 `json:",omitempty"`
+	AirSupply int `json:",omitempty"`
 	// MaxAirSupply is the maximum air supply the player can have.
-	MaxAirSupply int64 `json:",omitempty"`
+	MaxAirSupply int `json:",omitempty"`
 	// GameMode is the last gamemode the playerData had, like creative or survival.
 	GameMode int `json:",omitempty"`
 	// Inventory contains all the items in the inventory, including armor, main inventory and offhand.
@@ -59,22 +66,22 @@ type playerData struct {
 }
 
 // convertSavablePlayerData converts the player data passed to a playerData struct that can be saved to disk.
-func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dimension) *world.World) player.Data {
-	data := player.Data{
-		UUID:     dat.UUID,
-		Username: dat.Username,
+func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dimension) *world.World) config {
+	data := config{
+		Config: player.Config{
+			UUID: dat.UUID,
+			Name: dat.Username,
+		},
 	}
+
 	data.Position = dat.Position
 	data.Velocity = dat.Velocity
-	data.Yaw = dat.Yaw
-	data.Pitch = dat.Pitch
+	data.Rotation = cube.Rotation{dat.Yaw, dat.Pitch}
 	data.Health = dat.Health
 	data.MaxHealth = dat.MaxHealth
-	data.Hunger = dat.Hunger
 	data.FoodTick = dat.FoodTick
-	data.ExhaustionLevel = dat.ExhaustionLevel
-	data.SaturationLevel = dat.SaturationLevel
-	data.AbsorptionLevel = dat.AbsorptionLevel
+	data.Exhaustion = dat.ExhaustionLevel
+	data.Saturation = dat.SaturationLevel
 	data.EnchantmentSeed = dat.EnchantmentSeed
 	data.Experience = dat.Experience
 	data.AirSupply = dat.AirSupply
@@ -91,10 +98,15 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 	if err != nil {
 		p.log.Error("bedrock-gophers/provider: error decoding inventory: %v\n", err)
 	}
-	data.Inventory = inv
-	data.EnderChestInventory = make([]item.Stack, len(dat.EnderChestInventory))
+	data.Inventory = inventory.New(36, nil)
+	for s, i := range inv.Items {
+		_ = data.Inventory.SetItem(s, i)
+	}
+
+	data.EnderChestInventory = inventory.New(27, nil)
 	for i, stack := range dat.EnderChestInventory {
-		data.EnderChestInventory[i], _ = stack.ToStack()
+		s, _ := stack.ToStack()
+		_ = data.EnderChestInventory.SetItem(i, s)
 	}
 	data.FallDistance = dat.FallDistance
 	data.FireTicks = dat.FireTicks
@@ -115,22 +127,31 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 }
 
 // convertNonSavablePlayerData converts the player data passed to a playerData struct that can be saved to disk.
-func (p *Provider) convertNonSavablePlayerData(dat player.Data) playerData {
+func (p *Provider) convertNonSavablePlayerData(dat config) playerData {
 	settings := p.settings
 	playerDat := playerData{
 		UUID:     dat.UUID,
-		Username: dat.Username,
+		Username: dat.Name,
 	}
 
 	if settings.SaveGameMode {
 		playerDat.GameMode, _ = world.GameModeID(dat.GameMode)
 	}
 	if settings.SaveInventory {
-		playerDat.Inventory = ConvertNonSavableInventory(dat.Inventory)
+		invData := playerdb.InventoryData{
+			Helmet:     dat.Armour.Helmet(),
+			Chestplate: dat.Armour.Chestplate(),
+			Leggings:   dat.Armour.Leggings(),
+			Boots:      dat.Armour.Boots(),
+		}
+		for s, it := range dat.Inventory.Slots() {
+			invData.Items[s] = it
+		}
+		playerDat.Inventory = ConvertNonSavableInventory(invData)
 	}
 	if settings.SaveEnderChest {
-		playerDat.EnderChestInventory = make([]StackData, len(dat.EnderChestInventory))
-		for i, stack := range dat.EnderChestInventory {
+		playerDat.EnderChestInventory = make([]StackData, len(dat.EnderChestInventory.Slots()))
+		for i, stack := range dat.EnderChestInventory.Slots() {
 			playerDat.EnderChestInventory[i] = StackToData(stack)
 		}
 	}
@@ -141,21 +162,17 @@ func (p *Provider) convertNonSavablePlayerData(dat player.Data) playerData {
 		playerDat.Velocity = dat.Velocity
 	}
 	if settings.SaveRotation {
-		playerDat.Yaw = dat.Yaw
-		playerDat.Pitch = dat.Pitch
+		playerDat.Yaw = dat.Rotation.Yaw()
+		playerDat.Pitch = dat.Rotation.Pitch()
 	}
 	if settings.SaveHealth {
 		playerDat.Health = dat.Health
 		playerDat.MaxHealth = dat.MaxHealth
 	}
 	if settings.SaveHunger {
-		playerDat.Hunger = dat.Hunger
 		playerDat.FoodTick = dat.FoodTick
-		playerDat.ExhaustionLevel = dat.ExhaustionLevel
-		playerDat.SaturationLevel = dat.SaturationLevel
-	}
-	if settings.SaveAbsorption {
-		playerDat.AbsorptionLevel = dat.AbsorptionLevel
+		playerDat.ExhaustionLevel = dat.Exhaustion
+		playerDat.SaturationLevel = dat.Saturation
 	}
 	if settings.SaveEnchantment {
 		playerDat.EnchantmentSeed = dat.EnchantmentSeed

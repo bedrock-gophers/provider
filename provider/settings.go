@@ -28,7 +28,6 @@ type Settings struct {
 	SaveFoodTick     bool
 	SaveExhaustion   bool
 	SaveSaturation   bool
-	SaveAbsorption   bool
 	SaveEnchantment  bool
 	SaveExperience   bool
 	SaveGameMode     bool
@@ -57,7 +56,6 @@ func DefaultSettings() Settings {
 		SaveFoodTick:     true,
 		SaveExhaustion:   true,
 		SaveSaturation:   true,
-		SaveAbsorption:   true,
 		SaveEnchantment:  true,
 		SaveExperience:   true,
 		SaveGameMode:     true,

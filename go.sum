@@ -13,6 +13,8 @@ github.com/df-mc/dragonfly v0.9.18 h1:Ul+BuMn4rzjNj5C2dxlhM/DqR1/MazSmoS93c6bfMH
 github.com/df-mc/dragonfly v0.9.18/go.mod h1:1G+G/KKvsDLWRfLy26ALUH83uq4Focb4O5xhmmKKfDE=
 github.com/df-mc/dragonfly v0.9.19-0.20241117115802-a2ea5412ae32 h1:+37pigit3NPHDRV/Po8PtgmsqMd3tkCN4fhQIOT4bNk=
 github.com/df-mc/dragonfly v0.9.19-0.20241117115802-a2ea5412ae32/go.mod h1:WUHhJftm79ctWLXy+eBm1URymVSP4wDJX5HoaaS1iP0=
+github.com/df-mc/dragonfly v0.9.20-0.20241223191437-0c82bfe639c0 h1:FHCUUM5iOWaVkT2XcNz43OxV/ho2+6dhE8AnQpDNYkY=
+github.com/df-mc/dragonfly v0.9.20-0.20241223191437-0c82bfe639c0/go.mod h1:jcn87QTYUn1TdXlSlC82M6bWvR2L3YMJ77cT4hDU144=
 github.com/df-mc/goleveldb v1.1.9 h1:ihdosZyy5jkQKrxucTQmN90jq/2lUwQnJZjIYIC/9YU=
 github.com/df-mc/goleveldb v1.1.9/go.mod h1:+NHCup03Sci5q84APIA21z3iPZCuk6m6ABtg4nANCSk=
 github.com/df-mc/worldupgrader v1.0.16 h1:3n9yvLFNCe8IDJnUEliTGbhDvV1frjtPX/y5zl3Q5EE=
@@ -67,6 +69,8 @@ github.com/sandertv/gophertunnel v1.41.0 h1:PGqqALaatGqcZ+qWXOcR4+CHPhQohnm/ZrnH
 github.com/sandertv/gophertunnel v1.41.0/go.mod h1:uSaX7RbVaCcxsGAx2vyZnkT0M6kZFGCdAqLn0+wuKyY=
 github.com/sandertv/gophertunnel v1.42.2 h1:YWi4vAkq9IpNFIDxOrSMeGh2wkWMCMO8Kg45/R7VTQs=
 github.com/sandertv/gophertunnel v1.42.2/go.mod h1:krvLSeRUNQ2iEYJNEgzrKtWO8W5ybZxN5lFfSCkHoNk=
+github.com/sandertv/gophertunnel v1.43.0 h1:zoB0nngGXokBlj+ge4ISvbInEd/1xbrIlclC/POCTgc=
+github.com/sandertv/gophertunnel v1.43.0/go.mod h1:krvLSeRUNQ2iEYJNEgzrKtWO8W5ybZxN5lFfSCkHoNk=
 github.com/segmentio/fasthash v1.0.3 h1:EI9+KE1EwvMLBWwjpRDc+fEM+prwxDYbslddQGtrmhM=
 github.com/segmentio/fasthash v1.0.3/go.mod h1:waKX8l2N8yckOgmSsXJi7x1ZfdKZ4x7KRMzBtS3oedY=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
