@@ -2,6 +2,7 @@ package provider
 
 import (
 	"github.com/df-mc/dragonfly/server/block/cube"
+	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/item/inventory"
 	"github.com/df-mc/dragonfly/server/player"
 	"github.com/df-mc/dragonfly/server/player/playerdb"
@@ -143,6 +144,7 @@ func (p *Provider) convertNonSavablePlayerData(dat config) playerData {
 			Chestplate: dat.Armour.Chestplate(),
 			Leggings:   dat.Armour.Leggings(),
 			Boots:      dat.Armour.Boots(),
+			Items:      make([]item.Stack, len(dat.Inventory.Slots())),
 		}
 		for s, it := range dat.Inventory.Slots() {
 			invData.Items[s] = it
