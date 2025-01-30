@@ -81,6 +81,7 @@ func (p *Provider) convertSavablePlayerData(dat playerData, wrld func(world.Dime
 	data.Health = dat.Health
 	data.MaxHealth = dat.MaxHealth
 	data.FoodTick = dat.FoodTick
+	data.Food = dat.Hunger
 	data.Exhaustion = dat.ExhaustionLevel
 	data.Saturation = dat.SaturationLevel
 	data.EnchantmentSeed = dat.EnchantmentSeed
@@ -173,6 +174,7 @@ func (p *Provider) convertNonSavablePlayerData(dat config) playerData {
 	}
 	if settings.SaveHunger {
 		playerDat.FoodTick = dat.FoodTick
+		playerDat.Hunger = dat.Food
 		playerDat.ExhaustionLevel = dat.Exhaustion
 		playerDat.SaturationLevel = dat.Saturation
 	}
